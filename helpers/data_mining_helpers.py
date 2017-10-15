@@ -1,8 +1,9 @@
 import nltk
+from nltk.corpus import stopwords
+import pandas as pd
 
 """
 Helper functions for data mining lab session 2017 Fall
-
 Notations:
 d - document
 D - documents
@@ -26,19 +27,18 @@ def format_labels(target, docs):
 
 def check_missing_values(row):
     """ functions that check and verifies if there are missing values in dataframe """
-    counter = 0
-    for element in row:
-        if element == True:
-            counter+=1
-    return ("The amoung of missing records is: ", counter)
+    # Faster way to summarize if a series contains null values or not
+    # [Ref] https://stackoverflow.com/a/29530601
+    return ("The amoung of missing records is: ", pd.Series.sum(row))
 
 def tokenize_text(text, remove_stopwords=False):
     """
     Tokenize text using the nltk library
     """
+    stop_words = stopwords.words('english')
     tokens = []
     for d in nltk.sent_tokenize(text, language='english'):
         for word in nltk.word_tokenize(d, language='english'):
-            # filters here
-            tokens.append(word)
+            if (word not in stop_words or not remove_stopwords):
+                tokens.append(word)
     return tokens
